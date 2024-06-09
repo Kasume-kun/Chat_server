@@ -13,6 +13,12 @@ int main()
 		htons(5555),
 		0
 	};
+	
+	bind(sockfd, &address, sizeof(address));
+
+    	listen(sockfd, 10);
+
+    	int clientfd = accept(sockfd, 0, 0);
 
 	connect(sockfd, &address, sizeof(address));
 
@@ -23,7 +29,7 @@ int main()
 			0
 		},
 		{
-			sockfd,
+			clientfd,
 			POLLIN,
 			0
 		}
@@ -38,13 +44,13 @@ int main()
 		if(fds[0].revents & POLLIN)
 		{
 			read(0, buffer, 255);
-			send(sockfd, buffer, 255, 0);
+			send(clientfd, buffer, 255, 0);
 		}
 		else if(fds[1].revents & POLLIN)
 		{
-			if(recv(sockfd, buffer, 255, 0) == 0)
+			if(recv(clientfd, buffer, 255, 0) == 0)
 				return 0;
-			printf("%s\n","SERVER:");
+			
 			printf("%s\n",buffer);
 		}
 	}
